@@ -8,7 +8,18 @@
         :to="{ name: 'List', query: { tid: item.id } }"
       />
     </sidebar>
-    <div class="products">
+    <!--
+      loading   属性，表示是否正在加载
+      finished  属性，表示是否加载完成
+      load      事件，触底之后触发。当loading为false并且finished为false的时候才执行
+    -->
+    <List
+      class="products"
+      :loading="loading"
+      :finished="finished"
+      finished-text="没有更多了"
+      @load="onLoad"
+    >
       <card
         v-for="item in products"
         :num="item.amount"
@@ -16,19 +27,24 @@
         :title="item.name"
         :thumb="dalImg(item.coverImage)"
       />
-    </div>
+    </List>
   </div>
 </template>
 <script setup>
 import { computed, ref } from 'vue';
 import { onBeforeRouteUpdate, useRoute } from 'vue-router';
-import { Sidebar, SidebarItem, Card } from 'vant';
+import { Sidebar, SidebarItem, Card, List } from 'vant';
 import { dalImg } from '../utils/tools';
 import { useCategories } from '../hooks/use-categories';
 import { loadProductsAPI } from '../services/products';
 
 const route = useRoute();
 const { categories } = useCategories();
+
+const page = ref(1); // 当前页码
+const loading = ref(false); // 是否加载中
+const finished = ref(false); // 是否加载完成
+// const onLoad = () => {};
 
 // 当前的分类id
 const currentCategoryId = ref(route.query.tid);
@@ -54,17 +70,26 @@ const products = ref([]);
 onBeforeRouteUpdate((to, from) => {
   // console.log(to.query);
   currentCategoryId.value = to.query.tid;
-  loadDataFromServer();
+
+  // 需要重置数据
+  finished.value = false;
+  page.value = 1;
+  products.value = [];
+  onLoad();
 });
 
 // 商品列表
-const loadDataFromServer = () => {
-  loadProductsAPI(1, currentCategoryId.value).then((res) => {
+const onLoad = () => {
+  loading.value = true;
+  loadProductsAPI(page.value, currentCategoryId.value).then((res) => {
     // console.log(res);
-    products.value = res.data;
+    finished.value = res.pages < page.value;
+    loading.value = false;
+    products.value.push(...res.data);
+    page.value++; // 加载数据成功之后也码+1
   });
 };
-loadDataFromServer();
+// loadDataFromServer();
 </script>
 <style scoped>
 .list {
