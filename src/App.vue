@@ -1,5 +1,19 @@
 <script setup>
+import { ref, watch } from 'vue';
 import { Tabbar, TabbarItem } from 'vant';
+import { useRoute } from 'vue-router';
+const route = useRoute();
+const isShowTabBar = ref(true);
+
+// 监听路由的变化
+watch(route, (v) => {
+  if (v.meta.needHideTabBar) {
+    isShowTabBar.value = false;
+  } else {
+    isShowTabBar.value = true;
+  }
+});
+
 // 组件初始化的时候执行
 // import { ref } from 'vue';
 // const count = ref(0);
@@ -21,7 +35,7 @@ import { Tabbar, TabbarItem } from 'vant';
   <router-link :to="{ name: 'User' }">【我的】</router-link> -->
   <!-- <hr /> -->
   <router-view class="main"></router-view>
-  <tabbar route :fixed="false" active-color="deeppink">
+  <tabbar v-show="isShowTabBar" route :fixed="false" active-color="deeppink">
     <tabbar-item icon="home-o" :to="{ name: 'Home' }">首页</tabbar-item>
     <tabbar-item icon="search" :to="{ name: 'List' }">热卖</tabbar-item>
     <tabbar-item icon="shopping-cart-o" :to="{ name: 'Cart' }"

@@ -21,11 +21,13 @@
       :price="item.price.toFixed(2)"
       :title="item.name"
       :thumb="dalImg(item.coverImage)"
+      @click-thumb="toDetail(item.id)"
     />
   </div>
 </template>
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { Button, Card, Swipe, SwipeItem, Grid, GridItem } from 'vant';
 // import { loadProductsAPI } from '../services/products';
 import { loadBannersAPI } from '../services/banners';
@@ -42,6 +44,8 @@ import { useProducts } from '../hooks/use-products';
 //   products.value = res.data;
 // });
 
+const { push } = useRouter();
+
 const { products, onLoad } = useProducts();
 onLoad(); // 调用方法获取数据
 
@@ -53,6 +57,15 @@ loadBannersAPI().then((res) => (banners.value = res.data));
 const { categories } = useCategories();
 // const categories = ref([]);
 // loadCategoriesAPI().then((res) => (categories.value = res.data));
+
+const toDetail = (id) => {
+  push({
+    name: 'Detail',
+    query: {
+      id,
+    },
+  });
+};
 </script>
 <style>
 /* .my-swipe .van-swipe-item {

@@ -21,6 +21,9 @@ const router = createRouter({
       path: '/detail',
       name: 'Detail',
       component: () => import('./views/Detail.vue'),
+      meta: {
+        needHideTabBar: true, // 需要隐藏底部的TabBar
+      },
     },
     {
       path: '/user',

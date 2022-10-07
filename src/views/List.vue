@@ -26,13 +26,14 @@
         :price="item.price.toFixed(2)"
         :title="item.name"
         :thumb="dalImg(item.coverImage)"
+        @click-thumb="toDetail(item.id)"
       />
     </List>
   </div>
 </template>
 <script setup>
 import { computed, ref } from 'vue';
-import { onBeforeRouteUpdate, useRoute } from 'vue-router';
+import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router';
 import { Sidebar, SidebarItem, Card, List } from 'vant';
 import { dalImg } from '../utils/tools';
 import { useCategories } from '../hooks/use-categories';
@@ -40,6 +41,8 @@ import { useCategories } from '../hooks/use-categories';
 import { useProducts } from '../hooks/use-products';
 
 const route = useRoute();
+const { push } = useRouter();
+
 const { categories } = useCategories();
 const { loading, finished, onLoad, products, currentCategoryId } = useProducts(
   route.query.tid
@@ -61,6 +64,19 @@ onBeforeRouteUpdate((to, from) => {
   // 需要重置数据
   onLoad(true, to.query.tid);
 });
+
+/**
+ * 跳转到详情
+ * @param {*} id
+ */
+const toDetail = (id) => {
+  push({
+    name: 'Detail',
+    query: {
+      id,
+    },
+  });
+};
 </script>
 <style scoped>
 .list {
