@@ -27,19 +27,23 @@
 <script setup>
 import { ref } from 'vue';
 import { Button, Card, Swipe, SwipeItem, Grid, GridItem } from 'vant';
-import { loadProductsAPI } from '../services/products';
+// import { loadProductsAPI } from '../services/products';
 import { loadBannersAPI } from '../services/banners';
 // import { loadCategoriesAPI } from '../services/categories';
 import { dalImg } from '../utils/tools';
 
 import { useCategories } from '../hooks/use-categories';
+import { useProducts } from '../hooks/use-products';
 
-// 商品
-const products = ref([]);
-loadProductsAPI().then((res) => {
-  // console.log(res);
-  products.value = res.data;
-});
+// // 商品
+// const products = ref([]);
+// loadProductsAPI().then((res) => {
+//   // console.log(res);
+//   products.value = res.data;
+// });
+
+const { products, onLoad } = useProducts();
+onLoad(); // 调用方法获取数据
 
 // 轮播图
 const banners = ref([]);
